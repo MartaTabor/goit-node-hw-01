@@ -1,6 +1,5 @@
 const { Command } = require("commander");
-require("color");
-const contacts = require("./db/contacts.json");
+const contacts = require("./contacts");
 const program = new Command();
 
 program
@@ -19,7 +18,7 @@ async function invokeAction({ action, id, name, email, phone }) {
     case "list":
       try {
         const allContacts = await contacts.listContacts();
-        console.table(allContacts.green);
+        console.table(allContacts);
       } catch (error) {
         console.error("Error listing contacts: ", error);
       }
@@ -29,7 +28,7 @@ async function invokeAction({ action, id, name, email, phone }) {
       try {
         const contact = await contacts.getContactById(id);
         if (contact) {
-          console.log(contact.blue);
+          console.log(contact);
         } else {
           console.log(`Contact with id ${id} not found`);
         }
@@ -41,7 +40,7 @@ async function invokeAction({ action, id, name, email, phone }) {
     case "add":
       try {
         const newContact = await contacts.addContact(name, email, phone);
-        console.log(newContact.yellow);
+        console.log(newContact);
       } catch (error) {
         console.error("Error adding contact: ", error);
       }
@@ -50,7 +49,7 @@ async function invokeAction({ action, id, name, email, phone }) {
     case "remove":
       try {
         const updatedContacts = await contacts.removeContact(id);
-        console.log(updatedContacts.orange);
+        console.table(updatedContacts);
       } catch (error) {
         console.error("Error removing contact: ", error);
       }

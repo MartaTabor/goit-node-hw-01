@@ -1,11 +1,10 @@
-const fs = require("fs");
+const fs = require("fs").promises;
 const path = require("path");
 const contactsPath = path.join(__dirname, "db", "contacts.json");
-const nanoid = require("nanoid");
 
 async function listContacts() {
   try {
-    const data = await fs.readFile(contactsPath, "utf-8");
+    const data = await fs.readFile(contactsPath);
     return JSON.parse(data);
   } catch (error) {
     console.error("Error fetching contacts: ", error);
@@ -40,7 +39,7 @@ async function removeContact(contactId) {
 async function addContact(name, email, phone) {
   try {
     const contacts = await listContacts();
-    const newContact = { id: nanoid(), name, email, phone };
+    const newContact = { id: Date.now().toString(), name, email, phone };
     contacts.push(newContact);
     fs.writeFile(contactsPath, JSON.stringify(contacts, null, 2));
     return newContact;
