@@ -30,7 +30,7 @@ async function invokeAction({ action, id, name, email, phone }) {
         if (contact) {
           console.log(contact);
         } else {
-          console.log(`Contact with id ${id} not found`);
+          console.log(`Contact with id ${id} not found`.red);
         }
       } catch (error) {
         console.error("Error getting contact by id: ", error);
