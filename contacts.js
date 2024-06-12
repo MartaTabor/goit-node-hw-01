@@ -3,65 +3,51 @@ const path = require("path");
 const contactsPath = path.join(__dirname, "db", "contacts.json");
 const nanoid = require("nanoid");
 
-function listContacts() {
-  return new Promise((resolve, reject) => {
-    fs.readFile(contactsPath, "utf-8", (err, data) => {
-      if (err) {
-        return reject(err);
-      }
-      try {
-        const contacts = JSON.parse(data);
-        resolve(contacts);
-      } catch (error) {
-        reject(error);
-      }
-    });
-  });
+async function listContacts() {
+  try {
+    const data = await fs.readFile(contactsPath, "utf-8");
+    return JSON.parse(data);
+  } catch (error) {
+    console.error("Error fetching contacts: ", error);
+    throw error;
+  }
 }
 
-function getContactById(contactId) {
-  return listContacts()
-    .then((contacts) => contacts.find((contact) => contact.id === contactId))
-    .catch((error) => console.error(error));
+async function getContactById(contactId) {
+  try {
+    const contacts = await listContacts();
+    return contacts.find((contact) => contact.id === contactId) || null;
+  } catch (error) {
+    console.error("Error finding contact: ", error);
+    throw error;
+  }
 }
 
-function removeContact(contactId) {
-  return listContacts()
-    .then((contacts) => {
-      const updatedContacts = contacts.filter(
-        (contact) => contact.id !== contactId
-      );
-      return new Promise((resolve, reject) => {
-        fs.writeFile(
-          contactsPath,
-          JSON.stringify(updatedContacts, null, 2),
-          (err) => {
-            if (err) {
-              return reject(err);
-            }
-            resolve(updatedContacts);
-          }
-        );
-      });
-    })
-    .catch((error) => console.error(error));
+async function removeContact(contactId) {
+  try {
+    const contacts = await listContacts();
+    const updatedContacts = contacts.filter(
+      (contact) => contact.id !== contactId
+    );
+    fs.writeFile(contactsPath, JSON.stringify(updatedContacts, null, 2));
+    return updatedContacts;
+  } catch (error) {
+    console.error("Error removing contact: ", error);
+    throw error;
+  }
 }
 
-function addContact(name, email, phone) {
-  return listContacts()
-    .then((contacts) => {
-      const newContact = { id: nanoid(), name, email, phone };
-      contacts.push(newContact);
-      return new Promise((resolve, reject) => {
-        fs.writeFile(contactsPath, JSON.stringify(contacts, null, 2), (err) => {
-          if (err) {
-            return reject(err);
-          }
-          resolve(newContact);
-        });
-      });
-    })
-    .catch((error) => console.error(error));
+async function addContact(name, email, phone) {
+  try {
+    const contacts = await listContacts();
+    const newContact = { id: nanoid(), name, email, phone };
+    contacts.push(newContact);
+    fs.writeFile(contactsPath, JSON.stringify(contacts, null, 2));
+    return newContact;
+  } catch (error) {
+    console.error("Error adding contact: ", error);
+    throw error;
+  }
 }
 
 module.exports = {
