@@ -29,7 +29,7 @@ async function removeContact(contactId) {
     const updatedContacts = contacts.filter(
       (contact) => contact.id !== contactId
     );
-    fs.writeFile(contactsPath, JSON.stringify(updatedContacts, null, 2));
+    await fs.writeFile(contactsPath, JSON.stringify(updatedContacts, null, 2));
     return updatedContacts;
   } catch (error) {
     console.error("Error removing contact: ", error);
@@ -42,7 +42,7 @@ async function addContact(name, email, phone) {
     const contacts = await listContacts();
     const newContact = { id: uuidv4(), name, email, phone };
     contacts.push(newContact);
-    fs.writeFile(contactsPath, JSON.stringify(contacts, null, 2));
+    await fs.writeFile(contactsPath, JSON.stringify(contacts, null, 2));
     return newContact;
   } catch (error) {
     console.error("Error adding contact: ", error);
